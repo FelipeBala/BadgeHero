@@ -103,15 +103,20 @@ function setupEventListeners() {
         }
     });
 
-    // Add Badge
+    // Add Badge (within profile)
     addBadgeBtn.addEventListener('click', () => {
-        updateBadgeUserSelect();
         addBadgeModal.style.display = 'block';
     });
 
     addBadgeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const user_id = parseInt(document.getElementById('badgeUser').value);
+        
+        if (!currentUser) {
+            alert('Erro: usuário não selecionado.');
+            return;
+        }
+        
+        const user_id = currentUser.id;
         const name = document.getElementById('badgeName').value;
         const description = document.getElementById('badgeDescription').value;
         const icon = document.getElementById('badgeIcon').value;
@@ -132,10 +137,8 @@ function setupEventListeners() {
                 addBadgeForm.reset();
                 alert('Badge adicionada com sucesso!');
                 
-                // Atualizar perfil se estiver visualizando o usuário
-                if (currentUser && currentUser.id === user_id) {
-                    await showUserProfile(user_id);
-                }
+                // Atualizar perfil
+                await showUserProfile(user_id);
             } else {
                 alert('Erro ao adicionar badge: ' + data.error);
             }
@@ -176,10 +179,16 @@ function updateAdminUI() {
         adminLoginBtn.style.display = 'none';
         adminLogoutBtn.style.display = 'block';
         adminPanel.style.display = 'block';
+        
+        // Show add badge button in profile if viewing a user
+        if (currentUser && userProfile.style.display !== 'none') {
+            addBadgeBtn.style.display = 'inline-block';
+        }
     } else {
         adminLoginBtn.style.display = 'block';
         adminLogoutBtn.style.display = 'none';
         adminPanel.style.display = 'none';
+        addBadgeBtn.style.display = 'none';
     }
 }
 
@@ -237,6 +246,13 @@ async function showUserProfile(userId) {
         // Show profile
         userProfile.style.display = 'block';
         
+        // Show add badge button if admin
+        if (isAdmin) {
+            addBadgeBtn.style.display = 'inline-block';
+        } else {
+            addBadgeBtn.style.display = 'none';
+        }
+        
         // Update profile info
         document.getElementById('profileAvatar').src = user.avatar;
         document.getElementById('profileName').textContent = user.name;
@@ -283,18 +299,6 @@ async function showUserProfile(userId) {
         console.error('Erro ao carregar perfil:', error);
         alert('Erro ao conectar com o servidor.');
     }
-}
-
-// Update Badge User Select
-function updateBadgeUserSelect() {
-    const select = document.getElementById('badgeUser');
-    select.innerHTML = '<option value="">Selecione um usuário</option>';
-    users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = user.name;
-        select.appendChild(option);
-    });
 }
 
 // Set default date to today
