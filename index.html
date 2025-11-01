@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BadgeHero - Sistema de Badges</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏆 BadgeHero</h1>
+            <div class="admin-controls">
+                <button id="adminLoginBtn" class="btn-admin">Admin Login</button>
+                <button id="adminLogoutBtn" class="btn-admin" style="display: none;">Logout Admin</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Admin Login Modal -->
+        <div id="adminModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminPassword">Senha:</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+                <p class="hint">Dica: senha padrão é "admin123"</p>
+            </div>
+        </div>
+
+        <!-- Add User Modal -->
+        <div id="addUserModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Adicionar Novo Usuário</h2>
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="userName">Nome:</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userAvatar">Avatar URL (opcional):</label>
+                        <input type="text" id="userAvatar" placeholder="https://...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar Usuário</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Badge Modal -->
+        <div id="addBadgeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Adicionar Nova Badge</h2>
+                <form id="addBadgeForm">
+                    <div class="form-group">
+                        <label for="badgeUser">Usuário:</label>
+                        <select id="badgeUser" required>
+                            <option value="">Selecione um usuário</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="badgeName">Nome da Badge:</label>
+                        <input type="text" id="badgeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="badgeDescription">Descrição:</label>
+                        <textarea id="badgeDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="badgeIcon">Ícone (emoji):</label>
+                        <input type="text" id="badgeIcon" placeholder="🎯" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="badgeDate">Data:</label>
+                        <input type="date" id="badgeDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Adicionar Badge</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <h2>🔐 Painel Admin</h2>
+            <div class="admin-actions">
+                <button id="addUserBtn" class="btn btn-success">+ Adicionar Usuário</button>
+                <button id="addBadgeBtn" class="btn btn-success">+ Adicionar Badge</button>
+            </div>
+        </div>
+
+        <!-- User Selection -->
+        <section class="user-selection">
+            <h2>Selecione um Usuário</h2>
+            <div id="userGrid" class="user-grid">
+                <!-- Users will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- User Profile -->
+        <section id="userProfile" class="user-profile" style="display: none;">
+            <button id="backBtn" class="btn btn-secondary">← Voltar</button>
+            <div class="profile-header">
+                <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar">
+                <div class="profile-info">
+                    <h2 id="profileName"></h2>
+                    <p class="badge-count">Total de Badges: <span id="badgeCount">0</span></p>
+                </div>
+            </div>
+            <div class="badges-section">
+                <h3>🏅 Badges Conquistadas</h3>
+                <div id="badgesGrid" class="badges-grid">
+                    <!-- Badges will be dynamically loaded here -->
+                </div>
+                <div id="noBadges" class="no-badges" style="display: none;">
+                    <p>Este usuário ainda não possui badges.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 BadgeHero. Sistema de gerenciamento de badges.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
