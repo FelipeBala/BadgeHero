@@ -96,7 +96,6 @@ function setupEventListeners() {
                 await loadUsers();
                 addUserModal.style.display = 'none';
                 addUserForm.reset();
-                alert('Usuário adicionado com sucesso!');
             } else {
                 alert('Erro ao adicionar usuário: ' + data.error);
             }
@@ -138,7 +137,6 @@ function setupEventListeners() {
                 await loadUsers();
                 addBadgeModal.style.display = 'none';
                 addBadgeForm.reset();
-                alert('Badge adicionada com sucesso!');
                 
                 // Atualizar perfil
                 await showUserProfile(user_id);
@@ -380,7 +378,6 @@ async function deleteBadge(badgeId) {
         const data = await response.json();
         
         if (response.ok) {
-            alert('Badge deletada com sucesso!');
             // Reload user profile
             await showUserProfile(currentUser.id);
             await loadUsers(); // Update user list
