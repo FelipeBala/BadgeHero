@@ -182,6 +182,30 @@ app.post('/api/badges', (req, res) => {
     });
 });
 
+// Update badge (admin only)
+app.put('/api/badges/:id', (req, res) => {
+    const badgeId = req.params.id;
+    const { name, description, icon, date } = req.body;
+    
+    if (!name || !description || !icon || !date) {
+        res.status(400).json({ error: "Todos os campos são obrigatórios" });
+        return;
+    }
+    
+    db.run("UPDATE badges SET name = ?, description = ?, icon = ?, date = ? WHERE id = ?",
+        [name, description, icon, date, badgeId], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        if (this.changes === 0) {
+            res.status(404).json({ error: "Badge não encontrada" });
+            return;
+        }
+        res.json({ message: "Badge atualizada com sucesso" });
+    });
+});
+
 // Verify admin password
 app.post('/api/admin/verify', (req, res) => {
     const { password } = req.body;

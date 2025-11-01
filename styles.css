@@ -348,6 +348,43 @@ main.container {
     transform: scale(1.1);
 }
 
+.badge-edit-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.badge-card:hover .badge-edit-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.badge-edit-btn:hover {
+    background-color: #4338CA;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 768px) {
+    .badge-edit-btn {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
 .badge-header {
     display: flex;
     align-items: center;

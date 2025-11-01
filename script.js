@@ -9,6 +9,8 @@ let currentUser = null;
 let isAdmin = false;
 let deleteMode = false;
 let selectedAiImage = null;
+let editSelectedAiImage = null;
+let currentEditMode = 'add'; // 'add' or 'edit'
 
 // DOM Elements
 const adminLoginBtn = document.getElementById('adminLoginBtn');
@@ -17,15 +19,18 @@ const adminPanel = document.getElementById('adminPanel');
 const adminModal = document.getElementById('adminModal');
 const addUserModal = document.getElementById('addUserModal');
 const addBadgeModal = document.getElementById('addBadgeModal');
+const editBadgeModal = document.getElementById('editBadgeModal');
 const aiGalleryModal = document.getElementById('aiGalleryModal');
 const adminLoginForm = document.getElementById('adminLoginForm');
 const addUserForm = document.getElementById('addUserForm');
 const addBadgeForm = document.getElementById('addBadgeForm');
+const editBadgeForm = document.getElementById('editBadgeForm');
 const addUserBtn = document.getElementById('addUserBtn');
 const addBadgeBtn = document.getElementById('addBadgeBtn');
 const deleteBadgeBtn = document.getElementById('deleteBadgeBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 const openAiGalleryBtn = document.getElementById('openAiGalleryBtn');
+const editOpenAiGalleryBtn = document.getElementById('editOpenAiGalleryBtn');
 const userGrid = document.getElementById('userGrid');
 const userProfile = document.getElementById('userProfile');
 const userSelection = document.querySelector('.user-selection');
@@ -131,8 +136,21 @@ function setupEventListeners() {
 
     // Open AI Gallery
     openAiGalleryBtn.addEventListener('click', () => {
+        currentEditMode = 'add';
         loadAiGallery();
         aiGalleryModal.style.display = 'block';
+    });
+
+    // Open AI Gallery for Edit
+    editOpenAiGalleryBtn.addEventListener('click', () => {
+        currentEditMode = 'edit';
+        loadAiGallery();
+        aiGalleryModal.style.display = 'block';
+    });
+
+    // Image source toggle for edit
+    document.querySelectorAll('input[name="editImageSource"]').forEach(radio => {
+        radio.addEventListener('change', toggleEditImageSource);
     });
 
     addBadgeForm.addEventListener('submit', async (e) => {
@@ -186,6 +204,57 @@ function setupEventListeners() {
             }
         } catch (error) {
             console.error('Erro ao adicionar badge:', error);
+            alert('Erro ao conectar com o servidor.');
+        }
+    });
+
+    // Edit Badge Form Submit
+    editBadgeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const badgeId = document.getElementById('editBadgeId').value;
+        const imageSource = document.querySelector('input[name="editImageSource"]:checked').value;
+        let icon;
+        
+        if (imageSource === 'url') {
+            icon = document.getElementById('editBadgeIcon').value;
+            if (!icon) {
+                alert('Por favor, insira a URL da imagem.');
+                return;
+            }
+        } else {
+            if (!editSelectedAiImage) {
+                alert('Por favor, selecione uma imagem gerada por IA.');
+                return;
+            }
+            icon = editSelectedAiImage;
+        }
+        
+        const name = document.getElementById('editBadgeName').value;
+        const description = document.getElementById('editBadgeDescription').value;
+        const date = document.getElementById('editBadgeDate').value;
+        
+        try {
+            const response = await fetch(`${API_URL}/badges/${badgeId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description, icon, date })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                await loadUsers();
+                editBadgeModal.style.display = 'none';
+                editBadgeForm.reset();
+                
+                // Atualizar perfil
+                await showUserProfile(currentUser.id);
+            } else {
+                alert('Erro ao editar badge: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Erro ao editar badge:', error);
             alert('Erro ao conectar com o servidor.');
         }
     });
@@ -385,6 +454,7 @@ function renderBadges(badges) {
             
             badgeCard.innerHTML = `
                 ${deleteMode ? '<div class="badge-delete-btn">✕</div>' : ''}
+                ${isAdmin && !deleteMode ? '<button class="badge-edit-btn">✏️ Editar</button>' : ''}
                 <div class="badge-header">
                     <div class="badge-icon${isUrl ? '' : ' emoji'}">${iconHtml}</div>
                     <div class="badge-info">
@@ -398,6 +468,17 @@ function renderBadges(badges) {
             // Add click handler for delete mode
             if (deleteMode) {
                 badgeCard.addEventListener('click', () => deleteBadge(badge.id));
+            }
+            
+            // Add click handler for edit button
+            if (isAdmin && !deleteMode) {
+                const editBtn = badgeCard.querySelector('.badge-edit-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openEditBadgeModal(badge);
+                    });
+                }
             }
             
             badgesGrid.appendChild(badgeCard);
@@ -467,10 +548,14 @@ function loadAiGallery() {
             
             // Add selection to clicked image
             imageOption.classList.add('selected');
-            selectedAiImage = imageUrl;
             
-            // Update preview
-            updateAiImagePreview();
+            if (currentEditMode === 'add') {
+                selectedAiImage = imageUrl;
+                updateAiImagePreview();
+            } else {
+                editSelectedAiImage = imageUrl;
+                updateEditAiImagePreview();
+            }
             
             // Close modal after short delay
             setTimeout(() => {
@@ -491,6 +576,61 @@ function updateAiImagePreview() {
     } else {
         selectedAiImageDiv.innerHTML = '<p style="color: #6B7280;">Nenhuma imagem selecionada</p>';
     }
+}
+
+// Update Edit AI Image Preview
+function updateEditAiImagePreview() {
+    const editSelectedAiImageDiv = document.getElementById('editSelectedAiImage');
+    
+    if (editSelectedAiImage) {
+        editSelectedAiImageDiv.innerHTML = `<img src="${editSelectedAiImage}" alt="Selected Badge">`;
+    } else {
+        editSelectedAiImageDiv.innerHTML = '<p style="color: #6B7280;">Nenhuma imagem selecionada</p>';
+    }
+}
+
+// Toggle Edit Image Source
+function toggleEditImageSource() {
+    const imageSource = document.querySelector('input[name="editImageSource"]:checked').value;
+    const urlInputGroup = document.getElementById('editUrlInputGroup');
+    const aiInputGroup = document.getElementById('editAiInputGroup');
+    const badgeIconInput = document.getElementById('editBadgeIcon');
+    
+    if (imageSource === 'url') {
+        urlInputGroup.style.display = 'block';
+        aiInputGroup.style.display = 'none';
+        badgeIconInput.required = true;
+    } else {
+        urlInputGroup.style.display = 'none';
+        aiInputGroup.style.display = 'block';
+        badgeIconInput.required = false;
+    }
+}
+
+// Open Edit Badge Modal
+function openEditBadgeModal(badge) {
+    // Reset and populate form
+    editSelectedAiImage = null;
+    document.getElementById('editBadgeId').value = badge.id;
+    document.getElementById('editBadgeName').value = badge.name;
+    document.getElementById('editBadgeDescription').value = badge.description;
+    document.getElementById('editBadgeDate').value = badge.date;
+    
+    // Check if icon is URL or emoji
+    const isUrl = badge.icon.startsWith('http://') || badge.icon.startsWith('https://');
+    
+    if (isUrl) {
+        document.querySelector('input[name="editImageSource"][value="url"]').checked = true;
+        document.getElementById('editBadgeIcon').value = badge.icon;
+        editSelectedAiImage = null;
+    } else {
+        document.querySelector('input[name="editImageSource"][value="ai"]').checked = true;
+        editSelectedAiImage = badge.icon;
+        updateEditAiImagePreview();
+    }
+    
+    toggleEditImageSource();
+    editBadgeModal.style.display = 'block';
 }
 
 // Set default date to today

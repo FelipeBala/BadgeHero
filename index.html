@@ -101,6 +101,55 @@
             </div>
         </div>
 
+        <!-- Edit Badge Modal -->
+        <div id="editBadgeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Editar Badge</h2>
+                <form id="editBadgeForm">
+                    <input type="hidden" id="editBadgeId">
+                    <div class="form-group">
+                        <label for="editBadgeName">Nome da Badge:</label>
+                        <input type="text" id="editBadgeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBadgeDescription">Descrição:</label>
+                        <textarea id="editBadgeDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagem da Badge:</label>
+                        <div class="image-options">
+                            <label class="radio-option">
+                                <input type="radio" name="editImageSource" value="url" checked>
+                                <span>URL da Imagem</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="editImageSource" value="ai">
+                                <span>Gerar com IA</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="editUrlInputGroup">
+                        <label for="editBadgeIcon">URL da Imagem:</label>
+                        <input type="url" id="editBadgeIcon" placeholder="https://example.com/badge.png">
+                        <small style="color: #6B7280; margin-top: 0.25rem; display: block;">Cole a URL de uma imagem para a badge</small>
+                    </div>
+                    <div class="form-group" id="editAiInputGroup" style="display: none;">
+                        <label>Imagem Selecionada:</label>
+                        <div id="editSelectedAiImage" class="selected-ai-preview">
+                            <p style="color: #6B7280;">Nenhuma imagem selecionada</p>
+                        </div>
+                        <button type="button" id="editOpenAiGalleryBtn" class="btn btn-secondary">Escolher Imagem IA</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBadgeDate">Data:</label>
+                        <input type="date" id="editBadgeDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+
         <!-- AI Image Gallery Modal -->
         <div id="aiGalleryModal" class="modal">
             <div class="modal-content modal-large">
