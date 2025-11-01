@@ -8,6 +8,7 @@ let currentUser = null;
 // Admin State
 let isAdmin = false;
 let deleteMode = false;
+let selectedAiImage = null;
 
 // DOM Elements
 const adminLoginBtn = document.getElementById('adminLoginBtn');
@@ -16,6 +17,7 @@ const adminPanel = document.getElementById('adminPanel');
 const adminModal = document.getElementById('adminModal');
 const addUserModal = document.getElementById('addUserModal');
 const addBadgeModal = document.getElementById('addBadgeModal');
+const aiGalleryModal = document.getElementById('aiGalleryModal');
 const adminLoginForm = document.getElementById('adminLoginForm');
 const addUserForm = document.getElementById('addUserForm');
 const addBadgeForm = document.getElementById('addBadgeForm');
@@ -23,10 +25,19 @@ const addUserBtn = document.getElementById('addUserBtn');
 const addBadgeBtn = document.getElementById('addBadgeBtn');
 const deleteBadgeBtn = document.getElementById('deleteBadgeBtn');
 const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+const openAiGalleryBtn = document.getElementById('openAiGalleryBtn');
 const userGrid = document.getElementById('userGrid');
 const userProfile = document.getElementById('userProfile');
 const userSelection = document.querySelector('.user-selection');
 const backBtn = document.getElementById('backBtn');
+
+// AI Generated Images (simulated - using quality badge icons)
+const aiImages = [
+    'https://cdn-icons-png.flaticon.com/512/7648/7648377.png',
+    'https://cdn-icons-png.flaticon.com/512/8074/8074800.png',
+    'https://cdn-icons-png.flaticon.com/512/2767/2767146.png',
+    'https://cdn-icons-png.flaticon.com/512/9068/9068642.png'
+];
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
@@ -107,7 +118,21 @@ function setupEventListeners() {
 
     // Add Badge (within profile)
     addBadgeBtn.addEventListener('click', () => {
+        selectedAiImage = null;
+        document.querySelector('input[name="imageSource"][value="url"]').checked = true;
+        toggleImageSource();
         addBadgeModal.style.display = 'block';
+    });
+
+    // Image source toggle
+    document.querySelectorAll('input[name="imageSource"]').forEach(radio => {
+        radio.addEventListener('change', toggleImageSource);
+    });
+
+    // Open AI Gallery
+    openAiGalleryBtn.addEventListener('click', () => {
+        loadAiGallery();
+        aiGalleryModal.style.display = 'block';
     });
 
     addBadgeForm.addEventListener('submit', async (e) => {
@@ -118,10 +143,26 @@ function setupEventListeners() {
             return;
         }
         
+        const imageSource = document.querySelector('input[name="imageSource"]:checked').value;
+        let icon;
+        
+        if (imageSource === 'url') {
+            icon = document.getElementById('badgeIcon').value;
+            if (!icon) {
+                alert('Por favor, insira a URL da imagem.');
+                return;
+            }
+        } else {
+            if (!selectedAiImage) {
+                alert('Por favor, selecione uma imagem gerada por IA.');
+                return;
+            }
+            icon = selectedAiImage;
+        }
+        
         const user_id = currentUser.id;
         const name = document.getElementById('badgeName').value;
         const description = document.getElementById('badgeDescription').value;
-        const icon = document.getElementById('badgeIcon').value;
         const date = document.getElementById('badgeDate').value;
         
         try {
@@ -387,6 +428,68 @@ async function deleteBadge(badgeId) {
     } catch (error) {
         console.error('Erro ao deletar badge:', error);
         alert('Erro ao conectar com o servidor.');
+    }
+}
+
+// Toggle Image Source
+function toggleImageSource() {
+    const imageSource = document.querySelector('input[name="imageSource"]:checked').value;
+    const urlInputGroup = document.getElementById('urlInputGroup');
+    const aiInputGroup = document.getElementById('aiInputGroup');
+    const badgeIconInput = document.getElementById('badgeIcon');
+    
+    if (imageSource === 'url') {
+        urlInputGroup.style.display = 'block';
+        aiInputGroup.style.display = 'none';
+        badgeIconInput.required = true;
+    } else {
+        urlInputGroup.style.display = 'none';
+        aiInputGroup.style.display = 'block';
+        badgeIconInput.required = false;
+    }
+}
+
+// Load AI Gallery
+function loadAiGallery() {
+    const aiImageGrid = document.getElementById('aiImageGrid');
+    aiImageGrid.innerHTML = '';
+    
+    aiImages.forEach((imageUrl, index) => {
+        const imageOption = document.createElement('div');
+        imageOption.className = 'ai-image-option';
+        imageOption.innerHTML = `<img src="${imageUrl}" alt="AI Badge ${index + 1}">`;
+        
+        imageOption.addEventListener('click', () => {
+            // Remove previous selection
+            document.querySelectorAll('.ai-image-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selection to clicked image
+            imageOption.classList.add('selected');
+            selectedAiImage = imageUrl;
+            
+            // Update preview
+            updateAiImagePreview();
+            
+            // Close modal after short delay
+            setTimeout(() => {
+                aiGalleryModal.style.display = 'none';
+            }, 500);
+        });
+        
+        aiImageGrid.appendChild(imageOption);
+    });
+}
+
+// Update AI Image Preview
+function updateAiImagePreview() {
+    const selectedAiImageDiv = document.getElementById('selectedAiImage');
+    
+    if (selectedAiImage) {
+        selectedAiImageDiv.innerHTML = `<img src="${selectedAiImage}" alt="Selected Badge">`;
+    } else {
+        selectedAiImageDiv.innerHTML = '<p style="color: #6B7280;">Nenhuma imagem selecionada</p>';
     }
 }
 

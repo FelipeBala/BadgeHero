@@ -68,9 +68,29 @@
                         <textarea id="badgeDescription" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
+                        <label>Imagem da Badge:</label>
+                        <div class="image-options">
+                            <label class="radio-option">
+                                <input type="radio" name="imageSource" value="url" checked>
+                                <span>URL da Imagem</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="imageSource" value="ai">
+                                <span>Gerar com IA</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="urlInputGroup">
                         <label for="badgeIcon">URL da Imagem:</label>
-                        <input type="url" id="badgeIcon" placeholder="https://example.com/badge.png" required>
+                        <input type="url" id="badgeIcon" placeholder="https://example.com/badge.png">
                         <small style="color: #6B7280; margin-top: 0.25rem; display: block;">Cole a URL de uma imagem para a badge</small>
+                    </div>
+                    <div class="form-group" id="aiInputGroup" style="display: none;">
+                        <label>Imagem Selecionada:</label>
+                        <div id="selectedAiImage" class="selected-ai-preview">
+                            <p style="color: #6B7280;">Nenhuma imagem selecionada</p>
+                        </div>
+                        <button type="button" id="openAiGalleryBtn" class="btn btn-secondary">Escolher Imagem IA</button>
                     </div>
                     <div class="form-group">
                         <label for="badgeDate">Data:</label>
@@ -78,6 +98,17 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Adicionar Badge</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- AI Image Gallery Modal -->
+        <div id="aiGalleryModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close">&times;</span>
+                <h2>🎨 Escolha uma Imagem Gerada por IA</h2>
+                <div id="aiImageGrid" class="ai-image-grid">
+                    <!-- AI images will be loaded here -->
+                </div>
             </div>
         </div>
 
