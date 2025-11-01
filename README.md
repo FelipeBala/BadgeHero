@@ -51,7 +51,7 @@ http://localhost:3000
 - `user_id` - INTEGER (Foreign Key → users)
 - `name` - TEXT (Nome da badge)
 - `description` - TEXT (Descrição)
-- `icon` - TEXT (Emoji da badge)
+- `icon` - TEXT (URL da imagem da badge)
 - `date` - TEXT (Data de conquista)
 
 ### Tabela: admin

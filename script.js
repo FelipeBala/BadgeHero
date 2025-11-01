@@ -338,10 +338,16 @@ function renderBadges(badges) {
                 year: 'numeric' 
             });
             
+            // Check if icon is a URL or emoji
+            const isUrl = badge.icon.startsWith('http://') || badge.icon.startsWith('https://');
+            const iconHtml = isUrl 
+                ? `<img src="${badge.icon}" alt="${badge.name}" onerror="this.parentElement.innerHTML='🏆'">` 
+                : badge.icon;
+            
             badgeCard.innerHTML = `
                 ${deleteMode ? '<div class="badge-delete-btn">✕</div>' : ''}
                 <div class="badge-header">
-                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-icon${isUrl ? '' : ' emoji'}">${iconHtml}</div>
                     <div class="badge-info">
                         <h4>${badge.name}</h4>
                         <p class="badge-date">${formattedDate}</p>

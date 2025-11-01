@@ -75,14 +75,14 @@ function insertSampleData() {
     ];
 
     const sampleBadges = [
-        { user_id: 1, name: "Primeiro Login", description: "Realizou o primeiro acesso ao sistema", icon: "🎯", date: "2025-01-15" },
-        { user_id: 1, name: "Colaborador", description: "Contribuiu com 10 projetos", icon: "🤝", date: "2025-02-20" },
-        { user_id: 1, name: "Inovador", description: "Propôs uma ideia inovadora", icon: "💡", date: "2025-03-10" },
-        { user_id: 2, name: "Líder de Equipe", description: "Liderou com sucesso 3 projetos", icon: "👑", date: "2025-01-20" },
-        { user_id: 2, name: "Mentor", description: "Ajudou 5 novos membros da equipe", icon: "🎓", date: "2025-02-15" },
-        { user_id: 3, name: "Campeão de Vendas", description: "Atingiu a meta de vendas do trimestre", icon: "🏆", date: "2025-03-01" },
-        { user_id: 3, name: "Cliente Satisfeito", description: "Recebeu 5 avaliações positivas", icon: "⭐", date: "2025-03-15" },
-        { user_id: 3, name: "Networking", description: "Conectou-se com 50 profissionais", icon: "🌐", date: "2025-04-01" }
+        { user_id: 1, name: "Primeiro Login", description: "Realizou o primeiro acesso ao sistema", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828506.png", date: "2025-01-15" },
+        { user_id: 1, name: "Colaborador", description: "Contribuiu com 10 projetos", icon: "https://cdn-icons-png.flaticon.com/512/3159/3159310.png", date: "2025-02-20" },
+        { user_id: 1, name: "Inovador", description: "Propôs uma ideia inovadora", icon: "https://cdn-icons-png.flaticon.com/512/5701/5701682.png", date: "2025-03-10" },
+        { user_id: 2, name: "Líder de Equipe", description: "Liderou com sucesso 3 projetos", icon: "https://cdn-icons-png.flaticon.com/512/1533/1533913.png", date: "2025-01-20" },
+        { user_id: 2, name: "Mentor", description: "Ajudou 5 novos membros da equipe", icon: "https://cdn-icons-png.flaticon.com/512/2933/2933245.png", date: "2025-02-15" },
+        { user_id: 3, name: "Campeão de Vendas", description: "Atingiu a meta de vendas do trimestre", icon: "https://cdn-icons-png.flaticon.com/512/179/179251.png", date: "2025-03-01" },
+        { user_id: 3, name: "Cliente Satisfeito", description: "Recebeu 5 avaliações positivas", icon: "https://cdn-icons-png.flaticon.com/512/1828/1828614.png", date: "2025-03-15" },
+        { user_id: 3, name: "Networking", description: "Conectou-se com 50 profissionais", icon: "https://cdn-icons-png.flaticon.com/512/3176/3176363.png", date: "2025-04-01" }
     ];
 
     sampleUsers.forEach(user => {
