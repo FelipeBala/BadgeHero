@@ -106,7 +106,7 @@ app.get('/api/users', (req, res) => {
         FROM users
         LEFT JOIN badges ON users.id = badges.user_id
         GROUP BY users.id
-        ORDER BY users.id
+        ORDER BY badge_count DESC, users.name ASC
     `;
     
     db.all(query, [], (err, rows) => {
