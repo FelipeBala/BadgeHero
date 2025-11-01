@@ -109,7 +109,11 @@
             <div class="badges-section">
                 <div class="badges-header">
                     <h3>🏅 Badges Conquistadas</h3>
-                    <button id="addBadgeBtn" class="btn btn-success" style="display: none;">+ Adicionar Badge</button>
+                    <div class="badge-actions">
+                        <button id="addBadgeBtn" class="btn btn-success" style="display: none;">+ Adicionar Badge</button>
+                        <button id="deleteBadgeBtn" class="btn btn-danger" style="display: none;">🗑️ Deletar Badges</button>
+                        <button id="cancelDeleteBtn" class="btn btn-secondary" style="display: none;">Cancelar</button>
+                    </div>
                 </div>
                 <div id="badgesGrid" class="badges-grid">
                     <!-- Badges will be dynamically loaded here -->

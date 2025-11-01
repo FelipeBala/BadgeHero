@@ -258,6 +258,23 @@ main.container {
     color: var(--text-primary);
 }
 
+.badge-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #DC2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
 .badges-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -271,11 +288,47 @@ main.container {
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
     color: white;
+    position: relative;
 }
 
 .badge-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
+}
+
+.badge-card.delete-mode {
+    cursor: pointer;
+}
+
+.badge-card.delete-mode:hover {
+    transform: scale(0.98);
+    opacity: 0.8;
+}
+
+.badge-delete-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--danger-color);
+    color: white;
+    border: 3px solid white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.badge-delete-btn:hover {
+    background-color: #DC2626;
+    transform: scale(1.1);
 }
 
 .badge-header {
@@ -445,6 +498,20 @@ footer {
     .admin-controls {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .badge-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .badge-actions .btn {
+        width: 100%;
+    }
+
+    .badges-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 

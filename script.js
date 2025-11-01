@@ -7,6 +7,7 @@ let currentUser = null;
 
 // Admin State
 let isAdmin = false;
+let deleteMode = false;
 
 // DOM Elements
 const adminLoginBtn = document.getElementById('adminLoginBtn');
@@ -20,6 +21,8 @@ const addUserForm = document.getElementById('addUserForm');
 const addBadgeForm = document.getElementById('addBadgeForm');
 const addUserBtn = document.getElementById('addUserBtn');
 const addBadgeBtn = document.getElementById('addBadgeBtn');
+const deleteBadgeBtn = document.getElementById('deleteBadgeBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 const userGrid = document.getElementById('userGrid');
 const userProfile = document.getElementById('userProfile');
 const userSelection = document.querySelector('.user-selection');
@@ -148,8 +151,20 @@ function setupEventListeners() {
         }
     });
 
+    // Delete Badge Mode
+    deleteBadgeBtn.addEventListener('click', () => {
+        deleteMode = true;
+        toggleDeleteMode();
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+        deleteMode = false;
+        toggleDeleteMode();
+    });
+
     // Back Button
     backBtn.addEventListener('click', () => {
+        deleteMode = false;
         userProfile.style.display = 'none';
         userSelection.style.display = 'block';
         if (isAdmin) {
@@ -183,12 +198,33 @@ function updateAdminUI() {
         // Show add badge button in profile if viewing a user
         if (currentUser && userProfile.style.display !== 'none') {
             addBadgeBtn.style.display = 'inline-block';
+            deleteBadgeBtn.style.display = 'inline-block';
         }
     } else {
         adminLoginBtn.style.display = 'block';
         adminLogoutBtn.style.display = 'none';
         adminPanel.style.display = 'none';
         addBadgeBtn.style.display = 'none';
+        deleteBadgeBtn.style.display = 'none';
+        cancelDeleteBtn.style.display = 'none';
+    }
+}
+
+// Toggle Delete Mode
+function toggleDeleteMode() {
+    if (deleteMode) {
+        deleteBadgeBtn.style.display = 'none';
+        addBadgeBtn.style.display = 'none';
+        cancelDeleteBtn.style.display = 'inline-block';
+    } else {
+        deleteBadgeBtn.style.display = 'inline-block';
+        addBadgeBtn.style.display = 'inline-block';
+        cancelDeleteBtn.style.display = 'none';
+    }
+    
+    // Re-render badges with or without delete buttons
+    if (currentUser) {
+        renderBadges(currentUser.badges);
     }
 }
 
@@ -246,11 +282,18 @@ async function showUserProfile(userId) {
         // Show profile
         userProfile.style.display = 'block';
         
-        // Show add badge button if admin
+        // Reset delete mode
+        deleteMode = false;
+        
+        // Show admin buttons if admin
         if (isAdmin) {
             addBadgeBtn.style.display = 'inline-block';
+            deleteBadgeBtn.style.display = 'inline-block';
+            cancelDeleteBtn.style.display = 'none';
         } else {
             addBadgeBtn.style.display = 'none';
+            deleteBadgeBtn.style.display = 'none';
+            cancelDeleteBtn.style.display = 'none';
         }
         
         // Update profile info
@@ -259,44 +302,87 @@ async function showUserProfile(userId) {
         document.getElementById('badgeCount').textContent = user.badges.length;
         
         // Render badges
-        const badgesGrid = document.getElementById('badgesGrid');
-        const noBadges = document.getElementById('noBadges');
-        
-        if (user.badges.length === 0) {
-            badgesGrid.style.display = 'none';
-            noBadges.style.display = 'block';
-        } else {
-            badgesGrid.style.display = 'grid';
-            noBadges.style.display = 'none';
-            badgesGrid.innerHTML = '';
-            
-            user.badges.forEach(badge => {
-                const badgeCard = document.createElement('div');
-                badgeCard.className = 'badge-card';
-                
-                // Format date
-                const date = new Date(badge.date);
-                const formattedDate = date.toLocaleDateString('pt-BR', { 
-                    day: '2-digit', 
-                    month: 'long', 
-                    year: 'numeric' 
-                });
-                
-                badgeCard.innerHTML = `
-                    <div class="badge-header">
-                        <div class="badge-icon">${badge.icon}</div>
-                        <div class="badge-info">
-                            <h4>${badge.name}</h4>
-                            <p class="badge-date">${formattedDate}</p>
-                        </div>
-                    </div>
-                    <p class="badge-description">${badge.description}</p>
-                `;
-                badgesGrid.appendChild(badgeCard);
-            });
-        }
+        renderBadges(user.badges);
     } catch (error) {
         console.error('Erro ao carregar perfil:', error);
+        alert('Erro ao conectar com o servidor.');
+    }
+}
+
+// Render Badges
+function renderBadges(badges) {
+    const badgesGrid = document.getElementById('badgesGrid');
+    const noBadges = document.getElementById('noBadges');
+    
+    if (badges.length === 0) {
+        badgesGrid.style.display = 'none';
+        noBadges.style.display = 'block';
+    } else {
+        badgesGrid.style.display = 'grid';
+        noBadges.style.display = 'none';
+        badgesGrid.innerHTML = '';
+        
+        badges.forEach(badge => {
+            const badgeCard = document.createElement('div');
+            badgeCard.className = 'badge-card';
+            
+            if (deleteMode) {
+                badgeCard.classList.add('delete-mode');
+            }
+            
+            // Format date
+            const date = new Date(badge.date);
+            const formattedDate = date.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            badgeCard.innerHTML = `
+                ${deleteMode ? '<div class="badge-delete-btn">✕</div>' : ''}
+                <div class="badge-header">
+                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-info">
+                        <h4>${badge.name}</h4>
+                        <p class="badge-date">${formattedDate}</p>
+                    </div>
+                </div>
+                <p class="badge-description">${badge.description}</p>
+            `;
+            
+            // Add click handler for delete mode
+            if (deleteMode) {
+                badgeCard.addEventListener('click', () => deleteBadge(badge.id));
+            }
+            
+            badgesGrid.appendChild(badgeCard);
+        });
+    }
+}
+
+// Delete Badge
+async function deleteBadge(badgeId) {
+    if (!confirm('Tem certeza que deseja deletar esta badge?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/badges/${badgeId}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Badge deletada com sucesso!');
+            // Reload user profile
+            await showUserProfile(currentUser.id);
+            await loadUsers(); // Update user list
+        } else {
+            alert('Erro ao deletar badge: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erro ao deletar badge:', error);
         alert('Erro ao conectar com o servidor.');
     }
 }
